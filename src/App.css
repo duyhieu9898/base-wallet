@@ -1,0 +1,47 @@
+:root {
+  /* General Styles */
+  --background: #172029;
+  --body-text: #90a4ae;
+  --exit-modal-color: #dfe3e9;
+  --error-color: #ff8a80;
+  --header-text: #fafafa;
+  --info-border: #ffffff;
+  --link-text: #8c9eff;
+  --pie-chart-color: #b388ff;
+  --token-balance-text: #90a4ae;
+  --warning: #ff8a80;
+  --info: #ffc780;
+
+  /* Input Fields */
+  --input-text: #fafafa;
+  --input-placeholder-text: #575860;
+  --input-hover-background: #31313b;
+  --input-hover-placeholder-text: #818187;
+  --input-hover-border: #4c5480;
+
+  /* Button Styles */
+  --button-text: #fafafa;
+  --button-background: #536dfe;
+  --button-border: #3d5afe;
+  --inactive-button-border: rgba(140, 158, 255, 0.2);
+  --inactive-button-text: rgba(255, 255, 255, 0.6);
+
+  /* Fonts */
+  --roboto: 'Roboto', sans-serif;
+
+  /* Panel Styles */
+  --panel-border: #41476b;
+  --panel-background: #0b0e2a;
+  --panel-hover-border: #4c5480;
+  --panel-hover-background: #31313b;
+  --panel-header-background: #282932;
+}
+
+#root::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
