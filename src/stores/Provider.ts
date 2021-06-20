@@ -9,15 +9,6 @@ import { networkConnectors } from '../provider/networkConnectors';
 import { isTxReverted } from '../utils/helpers';
 import MiniRpcProvider from '../provider/MiniRpcProvider';
 import { EtherBigNumber } from '../utils/bignumber';
-import { Interface } from 'ethers/utils';
-
-export enum ContractTypes {
-  StakePoolController = 'StakePoolController',
-}
-
-export const schema = {
-  StakePoolController: require('../abi/StakePoolController.json'),
-};
 
 export interface ChainData {
   currentBlockNumber: number;
@@ -101,13 +92,6 @@ export default class ProviderStore {
     this.chainData.currentBlockNumber = blockNumber;
   }
 
-  @action updateChainData = (data: {
-    currentBlockNumber?: number;
-    gasPrice?: number;
-  }) => {
-    this.chainData = Object.assign({}, this.chainData, data);
-  };
-
   @action setAccount(account): void {
     this.providerStatus.account = account;
   }
@@ -139,33 +123,6 @@ export default class ProviderStore {
     );
   }
 
-  getContractAbiByType = (type: ContractTypes) => {
-    return schema[type];
-  };
-
-  getContract(
-    type: ContractTypes | any[],
-    address: string,
-    signerAccount?: string
-  ): ethers.Contract {
-    const { library } = this.providerStatus;
-    const abi = Array.isArray(type) ? type : schema[type];
-
-    if (signerAccount) {
-      return new ethers.Contract(
-        address,
-        abi,
-        this.getProviderOrSigner(library, signerAccount)
-      );
-    }
-
-    return new ethers.Contract(address, abi, library);
-  }
-
-  getContractInterface(type: ContractTypes | any[]): Interface {
-    const abi = Array.isArray(type) ? type : schema[type];
-    return new Interface(abi);
-  }
 
 
   getWeb3Provider(): Web3Provider | undefined {

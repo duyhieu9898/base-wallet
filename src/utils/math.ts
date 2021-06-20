@@ -254,32 +254,3 @@ export function calcPoolInGivenTokenRemove(
   const poolAmountIn = bdiv(bmul(poolSupply, tokenWeight), totalWeight);
   return poolAmountIn;
 }
-
-export function pushCollectedFundGivenOut(
-  tokenIn: string,
-  tokenAmountIn: BigNumber,
-  tokenOut: string,
-  _tokenAmountOut: BigNumber,
-  _collectedFee: string | number | BigNumber = 0
-): BigNumber {
-  // let subTokenAmountIn = new BigNumber(0)
-  let tokenAmountOut = _tokenAmountOut;
-  const collectedFee = new BigNumber(_collectedFee);
-  if (collectedFee.gt(0)) {
-    if (
-      isAddressEqual(
-        tokenIn,
-        networkConnectors.getContractConfig().collectedToken
-      )
-    ) {
-      // subTokenAmountIn = bdiv(bmul(_tokenAmountOut, collectedFee), BONE);
-    } else {
-      const _collectedFeeAmount = bdiv(
-        bmul(_tokenAmountOut, collectedFee),
-        BONE
-      );
-      tokenAmountOut = _tokenAmountOut.minus(_collectedFeeAmount);
-    }
-  }
-  return tokenAmountOut;
-}

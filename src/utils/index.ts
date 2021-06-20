@@ -1,7 +1,7 @@
 import { getAddress } from '@ethersproject/address';
 import { ChainId } from '../constants';
 import { BigNumber } from 'bignumber.js';
-import { bnum, isAddressEqual } from './helpers';
+import { bnum } from './helpers';
 import { EtherBigNumber, toEtherBigNumber } from './bignumber';
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -82,32 +82,6 @@ export function currencyId(currency: any): string {
   throw new Error('invalid currency');
 }
 
-/**
- * gets the amoutn difference plus the % change in change itself (second order change)
- * @param {*} valueNow
- * @param {*} value24HoursAgo
- * @param {*} value48HoursAgo
- */
-export const get2DayPercentChange = (
-  valueNow,
-  value24HoursAgo,
-  value48HoursAgo = '0'
-) => {
-  // get volume info for both 24 hour periods
-  let currentChange: number =
-    parseFloat(valueNow) - parseFloat(value24HoursAgo);
-  let previousChange: number =
-    parseFloat(value24HoursAgo) - parseFloat(value48HoursAgo);
-
-  const adjustedPercentChange =
-    ((currentChange - previousChange) / previousChange) * 100;
-
-  if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    return [currentChange, 0];
-  }
-  return [currentChange, adjustedPercentChange];
-};
-
 export async function splitQuery(
   query,
   localClient,
@@ -158,22 +132,7 @@ export async function splitQuery(
 // Borrowed from https://github.com/ai/nanoid/blob/3.0.2/non-secure/index.js
 // This alphabet uses `A-Za-z0-9_-` symbols. A genetic algorithm helped
 // optimize the gzip compression for this alphabet.
-const urlAlphabet =
-  'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
 
-/**
- *
- * @public
- */
-export function nanoid(size: number = 21) {
-  let id = ''; // A compact alternative for `for (var i = 0; i < step; i++)`.
-  let i = size;
-  while (i--) {
-    // `| 0` is more compact and faster than `Math.floor()`.
-    id += urlAlphabet[(Math.random() * 64) | 0];
-  }
-  return id;
-}
 
 export function calculateSlippageAmount(
   _value: string | number | BigNumber,
@@ -211,12 +170,6 @@ export function calculateGasMargin(
     .div(EtherBigNumber.from(10000));
 }
 
-export function checkIsVUsdLegacy(tokenAddress: string): boolean {
-  return isAddressEqual(
-    tokenAddress,
-    '0x1B8E12F839BD4e73A47adDF76cF7F0097d74c14C'
-  );
-}
 
 export function formatUnixTime(unix) {
   const milliseconds = unix * 1000;
@@ -227,72 +180,4 @@ export function formatUnixTime(unix) {
   return dateStr;
 }
 
-export function getEstTimeByBlock(inputBlock, currentBlock) {
-  if (!inputBlock || !currentBlock || inputBlock <= currentBlock) return '';
 
-  const timeStamp =
-    (inputBlock - currentBlock) * 3 + Math.ceil(Date.now() / 1000);
-  return formatUnixTime(timeStamp);
-}
-
-export function secondsToLevels(s: number): string {
-  const d = Math.floor(s / (3600 * 24));
-  s -= d * 3600 * 24;
-  const h = Math.floor(s / 3600);
-  s -= h * 3600;
-  const m = Math.floor(s / 60);
-  s -= m * 60;
-  const tmp = [];
-  d && tmp.push(d + 'd');
-  (h || m || s) && tmp.push(h + 'h');
-  (m || s) && tmp.push(m + 'm');
-  s && tmp.push(s + 's');
-  return tmp.join(' ');
-}
-
-export const filterPools = (
-  checksum,
-  tokensIn,
-  tokensContains,
-  initialPools
-) => {
-  if (!checksum && !tokensIn && !tokensContains) {
-    return initialPools;
-  }
-
-  if (checksum) {
-    return initialPools.filter(p =>
-      isAddressEqual(checksum, p.contractAddress)
-    );
-  }
-  // tokensContains
-  if (Array.isArray(tokensContains) && tokensContains.length) {
-    return initialPools.filter(p => {
-      return !p.tokens.some(
-        t => tokensContains.indexOf(t.symbol?.toUpperCase()) === -1
-      );
-    });
-  }
-
-  // tokensIn
-  if (Array.isArray(tokensIn) && tokensIn.length) {
-    return initialPools.filter(p => {
-      return (
-        p.tokens.some(t => {
-          return tokensIn.some(
-            keyword => t.symbol.toUpperCase().indexOf(keyword) >= 0
-          );
-        }) ||
-        tokensIn.some(
-          keyword => p.stakeToken.name.toUpperCase().indexOf(keyword) >= 0
-        )
-      );
-    });
-  }
-};
-
-export const uniqueArray = (arrArg: any) => {
-  return arrArg.filter((elem: any, pos: number, arr: Array<any>) => {
-    return arr.indexOf(elem) === pos;
-  });
-};
